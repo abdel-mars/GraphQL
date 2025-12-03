@@ -12,7 +12,7 @@ export const USER_PROFILE_QUERY = `query{
     totalUp
     totalDown
 #     Module XP
-    totalXp: transactions_aggregate(where:{type:{_eq:"xp"},eventId:{_eq:75}}){
+    totalXp: transactions_aggregate(where:{type:{_eq:"xp"}}){
       aggregate{
         sum{
           amount
@@ -25,7 +25,7 @@ export const USER_PROFILE_QUERY = `query{
     }
     
 #     projects/Questions already done in the module
-    xp: transactions(order_by:{createdAt:asc}where:{type:{_eq:"xp"},eventId:{_eq:75}}){
+    xp: transactions(order_by:{createdAt:asc}where:{type:{_eq:"xp"}}){
       createdAt
       amount
       path
@@ -55,7 +55,7 @@ export const USER_PROFILE_QUERY = `query{
       }
     }
 #     Skills
-    skills: transactions(order_by:{type:asc,amount:desc}distinct_on:[type],where:{eventId:{_eq:75} _and: {type:{_like:"skill_%"}}}){
+    skills: transactions(order_by:{type:asc,amount:desc}distinct_on:[type],where:{type:{_like:"skill_%"}}){
       type
       amount
       __typename
