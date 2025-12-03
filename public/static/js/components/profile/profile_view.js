@@ -1,6 +1,7 @@
 import { LineGraph } from '../visualizations/line_graph.js';
 import { BarGraph } from '../visualizations/bar_graph.js';
 import { PieChart } from '../visualizations/pie_chart.js';
+import { SpiderChart } from '../visualizations/Spider-Chart.js';
 import { USER_PROFILE_QUERY } from '../../api/queries.js';
 import { fetchGraphQLData } from '../../api/graphql_client.js';
 import { displayPopup } from '../../utils/display_popup.js';
@@ -66,7 +67,14 @@ export async function renderProfileView() {
             <p><strong>Current Level:</strong> <span id="level">Loading...</span></p>
           </div>
         </div>
-        
+
+        <div id="spider-chart" class="profile-section">
+          <h3>Best Skills</h3>
+          <div class="spider-chart-container">
+            <div id="spiderChart" class="chart-container"></div>
+          </div>
+        </div>
+
         <div id="audit-stats" class="profile-section">
           <h3>Audit Statistics</h3>
           <div class="audit-stats">
@@ -170,6 +178,39 @@ async function loadProfileData() {
     updateElementText('email', userData.email || 'N/A');
     updateElementText('campus', userData.campus || 'N/A');
     updateElementText('level', userData.events?.[0]?.level || 'N/A');
+
+    // Update Spider-Chart for best skills
+    const spiderChart = document.getElementById('spiderChart');
+    if (spiderChart) {
+      if (userData.skills && userData.skills.length > 0) {
+        const skillsData = userData.skills.map((skill) => {
+          // Format skill type (remove "skill_" prefix and capitalize)
+          const skillName =
+            skill.type.replace('skill_', '').charAt(0).toUpperCase() +
+            skill.type.replace('skill_', '').slice(1);
+
+          return {
+            status: skillName,
+            count: skill.amount,
+          };
+        });
+
+        // Sort skills by amount in descending order and take top 7
+        skillsData.sort((a, b) => b.count - a.count);
+        const topSkillsData = skillsData.slice(0, 8);
+
+        spiderChart.innerHTML = '';
+        const spiderChartInstance = new SpiderChart(topSkillsData, {
+          width: 400,
+          height: 400,
+          maxValue: 100,
+          colors: ['#3e3eff'],
+        });
+        spiderChart.appendChild(spiderChartInstance.render());
+      } else {
+        spiderChart.innerHTML = '<p>No skills data available</p>';
+      }
+    }
 
     // Update audit statistics
     const totalUp = userData.totalUp || 0;
