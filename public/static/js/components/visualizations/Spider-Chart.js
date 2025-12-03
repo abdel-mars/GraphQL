@@ -46,7 +46,7 @@ export class SpiderChart {
       circle.setAttribute('cy', centerY);
       circle.setAttribute('r', r);
       circle.setAttribute('fill', 'none');
-      circle.setAttribute('stroke', 'rgba(0, 0, 0, 0.1)');
+      circle.setAttribute('stroke', 'rgba(128, 128, 128, 0.3)');
       circle.setAttribute('stroke-width', '1');
       gridGroup.appendChild(circle);
 
@@ -76,7 +76,7 @@ export class SpiderChart {
       line.setAttribute('y1', centerY);
       line.setAttribute('x2', x);
       line.setAttribute('y2', y);
-      line.setAttribute('stroke', 'rgba(0, 0, 0, 0.2)');
+      line.setAttribute('stroke', 'rgba(128, 128, 128, 0.3)');
       line.setAttribute('stroke-width', '1');
       axesGroup.appendChild(line);
 
