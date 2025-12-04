@@ -109,7 +109,8 @@ body.dark-theme text {
 
 .signin-container {
   background-color: var(--dark-text-color);
-  width: 50%;
+  width: 90%;
+  max-width: 400px;
   margin: 250px auto;
   box-shadow: var(--box-shadow);
   border-radius: 10px;
