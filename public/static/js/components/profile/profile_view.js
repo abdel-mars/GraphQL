@@ -56,8 +56,8 @@ export async function renderProfileView() {
         <h2>Welcome to Your Profile</h2>
         <button id="logoutBtn" class="logout-btn">Log Out</button>
       </div>
-      <div class="profile-info">
-        <div id="basic-info" class="profile-section">
+      <div class="dashboard-content">
+        <div id="basic-info" class="profile-section basic-info-full">
           <h3>Basic Information</h3>
           <div class="profile-details">
             <p><strong>Name:</strong> <span id="fullName">Loading...</span></p>
@@ -68,7 +68,8 @@ export async function renderProfileView() {
           </div>
         </div>
 
-        <div id="spider-chart" class="profile-section">
+        <div class="profile-info">
+          <div id="spider-chart" class="profile-section">
           <h3>Best Skills</h3>
           <div class="spider-chart-container">
             <div id="spiderChart" class="chart-container"></div>
@@ -105,14 +106,18 @@ export async function renderProfileView() {
         <div id="completed-projects" class="profile-section">
           <h3>Completed Projects</h3>
           <div class="completed-projects-grid" id="completedProjectsGrid">
-            <p>Loading completed projects...</p>
+            <div class="projects-list">
+              <p>Loading completed projects...</p>
+            </div>
           </div>
         </div>
 
         <div id="current-projects" class="profile-section">
           <h3>Current Projects</h3>
           <div class="current-projects-grid" id="currentProjectsGrid">
-            <p>Loading current projects...</p>
+            <div class="projects-list">
+              <p>Loading current projects...</p>
+            </div>
           </div>
         </div>
 
@@ -121,6 +126,7 @@ export async function renderProfileView() {
           <div class="skills-container">
             <div id="skillsGraph" class="chart-container"></div>
           </div>
+        </div>
         </div>
       </div>
     `;

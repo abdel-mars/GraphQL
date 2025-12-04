@@ -434,6 +434,12 @@ body.dark-theme .sidebar-link {
   overflow-y: visible;
 }
 
+.profile-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
 body.dark-theme .profile-container {
   background-color: var(--dark-bg-color);
   color: var(--dark-text-color);
@@ -523,9 +529,11 @@ body.dark-theme .donut-chart text {
 
 .completed-projects-grid, .current-projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .project-card {
