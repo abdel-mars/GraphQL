@@ -183,7 +183,7 @@ async function loadProfileData() {
     updateElementText('username', userData.login || 'N/A');
     updateElementText('email', userData.email || 'N/A');
     updateElementText('campus', userData.campus || 'N/A');
-    updateElementText('level', userData.events?.[0]?.level || 'N/A');
+    updateElementText('level', userData.level_amount?.[0]?.amount || 'N/A');
 
     // Update Spider-Chart for best skills
     const spiderChart = document.getElementById('spiderChart');

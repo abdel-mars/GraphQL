@@ -23,14 +23,14 @@ export const USER_PROFILE_QUERY = `query{
     events(where:{eventId:{_eq:75}}){
       level
     }
-    
+
 #     projects/Questions already done in the module
     xp: transactions(order_by:{createdAt:asc}where:{type:{_eq:"xp"}}){
       createdAt
       amount
       path
     }
-    
+
 #     finished projects
     completed_projects: groups(order_by:{createdAt:asc}where:{group:{status:{_eq:finished}}}){
       group{
@@ -41,8 +41,17 @@ export const USER_PROFILE_QUERY = `query{
       }
     }
 #     Current Level
-    events(where: {eventId: {_eq: 75}}) {
-      level
+    level_amount: transactions(
+        where: {
+            type: {_eq: "level"},
+            _or: [{object: {type: {_eq: "project"}}},
+            {object: {type: {_eq: "piscine"}}}
+            ]
+        }
+        order_by: {amount: desc}
+        limit : 1
+    ){
+        amount
     }
 #     Current Projects Im working on
     current_projects: groups(where:{group:{status:{_eq:working}}}){
