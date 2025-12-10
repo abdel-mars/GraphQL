@@ -42,30 +42,50 @@ export class ContributionGraph {
       dateMap[key] = (dateMap[key] || 0) + d.amount;
     });
 
+
     // ---------------------------------------------
-    // Date range = last 1 year (GitHub style)
+    // Date range = current calendar year (Jan 1 to Dec 31)
     // ---------------------------------------------
     const today = new Date();
-    const start = new Date(today);
-    start.setFullYear(start.getFullYear() - 1);
+    const currentYear = today.getFullYear();
+    const start = new Date(currentYear, 0, 1); // January 1st of current year
+    const end = new Date(currentYear, 11, 31); // December 31st of current year
 
     const maxAmount = Math.max(...Object.values(dateMap), 1);
 
-    // Total number of days and weeks
-    const totalDays = Math.ceil((today - start) / (1000 * 60 * 60 * 24));
+
+    // Total number of days and weeks for full calendar year
+    const totalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
     const weeks = Math.ceil(totalDays / 7);
 
-    // SVG dimensions
+    // SVG dimensions (including space for day labels and year labels)
+    const dayLabelsWidth = 30;
+    const monthLabelsHeight = 20;
     const width =
-      weeks * (this.squareSize + this.squareGap) + this.padding * 2;
+      weeks * (this.squareSize + this.squareGap) + this.padding * 2 + dayLabelsWidth;
     const height =
-      7 * (this.squareSize + this.squareGap) + this.padding * 3;
+      7 * (this.squareSize + this.squareGap) + this.padding * 2 + monthLabelsHeight;
 
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
 
+
+
+
     // ---------------------------------------------
-    // 2) Add month labels
+    // 2) Add year label on the top left
+    // ---------------------------------------------
+    const yearLabel = document.createElementNS(svgNS, "text");
+    yearLabel.textContent = currentYear.toString();
+    yearLabel.setAttribute("x", this.padding);
+    yearLabel.setAttribute("y", this.padding - 5);
+    yearLabel.setAttribute("font-size", "12px");
+    yearLabel.setAttribute("font-weight", "bold");
+    yearLabel.setAttribute("fill", "var(--text-color)");
+    svg.appendChild(yearLabel);
+
+    // ---------------------------------------------
+    // 3) Add month labels at the top
     // ---------------------------------------------
     const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     let currentMonth = -1;
@@ -76,8 +96,8 @@ export class ContributionGraph {
       if (month !== currentMonth) {
         const label = document.createElementNS(svgNS, "text");
         label.textContent = monthNames[month];
-        label.setAttribute("x", this.padding + w * (this.squareSize + this.squareGap));
-        label.setAttribute("y", this.padding - 8);
+        label.setAttribute("x", this.padding + dayLabelsWidth + w * (this.squareSize + this.squareGap));
+        label.setAttribute("y", this.padding + 10);
         label.setAttribute("font-size", "10px");
         label.setAttribute("fill", "var(--text-color)");
         svg.appendChild(label);
@@ -87,13 +107,30 @@ export class ContributionGraph {
     }
 
     // ---------------------------------------------
-    // 3) Draw squares (days)
+    // 4) Add day labels (Mon, Wed, Fri)
+    // ---------------------------------------------
+    const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const showDays = [1, 3, 5]; // Mon, Wed, Fri (0-based: 1, 3, 5)
+    
+    for (const dayIndex of showDays) {
+      const label = document.createElementNS(svgNS, "text");
+      label.textContent = dayLabels[dayIndex];
+      label.setAttribute("x", 5);
+      label.setAttribute("y", this.padding + monthLabelsHeight + dayIndex * (this.squareSize + this.squareGap) + this.squareSize/2 + 3);
+      label.setAttribute("font-size", "10px");
+      label.setAttribute("fill", "var(--text-color)");
+      svg.appendChild(label);
+    }
+
+
+    // ---------------------------------------------
+    // 5) Draw squares (days)
     // ---------------------------------------------
     let day = new Date(start);
 
     for (let w = 0; w < weeks; w++) {
       for (let dow = 0; dow < 7; dow++) {
-        if (day > today) break;
+        if (day > end) break;
 
         const key = day.toISOString().slice(0, 10);
         const amount = dateMap[key] || 0;
@@ -102,9 +139,9 @@ export class ContributionGraph {
 
         const rect = document.createElementNS(svgNS, "rect");
 
-        // Position
-        const x = this.padding + w * (this.squareSize + this.squareGap);
-        const y = this.padding + dow * (this.squareSize + this.squareGap);
+        // Position (accounting for day labels on the left)
+        const x = this.padding + dayLabelsWidth + w * (this.squareSize + this.squareGap);
+        const y = this.padding + monthLabelsHeight + dow * (this.squareSize + this.squareGap);
 
         rect.setAttribute("x", x);
         rect.setAttribute("y", y);
@@ -113,20 +150,22 @@ export class ContributionGraph {
         rect.setAttribute("height", this.squareSize);
         rect.setAttribute("rx", 2);
 
+
         // -------------------------------------------
         // Dark Mode + Auto Color Shades
         // -------------------------------------------
-        const lightEmpty = "#ebedf0";
+        const lightEmpty = "#f0f0f0";
         const darkEmpty = "#161b22";
 
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const emptyColor = prefersDark ? darkEmpty : lightEmpty;
 
+
         rect.setAttribute(
           "fill",
           amount === 0
             ? emptyColor
-            : this._shadeColor(this.color, -0.6 + intensity * 0.6)
+            : this._shadeColor(this.color, -0.2 + intensity * 0.4)
         );
 
         // -------------------------------------------
@@ -155,6 +194,7 @@ export class ContributionGraph {
       }
     }
 
+
     // Add animation keyframes (only once)
     if (!document.getElementById("contribution-anim")) {
       const style = document.createElement("style");
@@ -163,15 +203,6 @@ export class ContributionGraph {
         @keyframes fadeIn {
           from { opacity: 0; transform: scale(0.8); }
           to { opacity: 1; transform: scale(1); }
-        }
-
-        :root {
-          --text-color: #333;
-        }
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --text-color: #ddd;
-          }
         }
       `;
       document.head.appendChild(style);

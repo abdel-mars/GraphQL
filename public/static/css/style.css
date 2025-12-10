@@ -601,6 +601,7 @@ body.dark-theme .bar-graph text {
   fill: var(--dark-text-color);
 }
 
+
 #xpGraph,
 #projectGraph,
 #skillsGraph,
@@ -613,6 +614,63 @@ body.dark-theme .bar-graph text {
   align-items: center;
   width: 100%;
   text-align: center;
+}
+
+
+
+
+#contributionGraph {
+  margin: 2rem auto;
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: var(--transition);
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.contribution-scroll-container {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.contribution-scroll-container svg {
+  height: auto;
+  flex-shrink: 0;
+}
+
+
+body.dark-theme #contributionGraph {
+  background-color: #1a1a1a;
+  border-color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.contribution-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.contribution-stats strong {
+  color: var(--primary-color);
+  margin-right: 0.5rem;
 }
 
 .line-graph,

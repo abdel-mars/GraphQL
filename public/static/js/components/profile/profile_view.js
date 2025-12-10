@@ -1,7 +1,9 @@
+
 import { LineGraph } from '../visualizations/line_graph.js';
 import { BarGraph } from '../visualizations/bar_graph.js';
 import { PieChart } from '../visualizations/pie_chart.js';
 import { SpiderChart } from '../visualizations/Spider-Chart.js';
+import { ContributionGraph } from '../visualizations/ContributionGraph.js';
 import { USER_PROFILE_QUERY } from '../../api/queries.js';
 import { fetchGraphQLData } from '../../api/graphql_client.js';
 import { displayPopup } from '../../utils/display_popup.js';
@@ -19,6 +21,7 @@ export async function renderProfileView() {
     existingContent.remove();
   }
 
+
   // Create sidebar
   const sidebar = document.createElement('div');
   sidebar.className = 'sidebar';
@@ -26,6 +29,7 @@ export async function renderProfileView() {
     <h3>Dashboard</h3>
     <ul class="sidebar-menu">
       <li><a href="#basic-info" class="sidebar-link active">Basic Information</a></li>
+      <li><a href="#contribution-activity" class="sidebar-link">Contribution Activity</a></li>
       <li><a href="#audit-stats" class="sidebar-link">Audit Statistics</a></li>
       <li><a href="#xp-stats" class="sidebar-link">XP Statistics</a></li>
       <li><a href="#project-stats" class="sidebar-link">Project Statistics</a></li>
@@ -57,6 +61,7 @@ export async function renderProfileView() {
         <button id="logoutBtn" class="logout-btn">Log Out</button>
       </div>
       <div class="dashboard-content">
+
         <div id="basic-info" class="profile-section basic-info-full">
           <h3>Basic Information</h3>
           <div class="profile-details">
@@ -66,6 +71,14 @@ export async function renderProfileView() {
             <p><strong>Campus:</strong> <span id="campus">Loading...</span></p>
             <p><strong>Current Level:</strong> <span id="level">Loading...</span></p>
           </div>
+        </div>
+
+        <div id="contribution-activity" class="profile-section">
+          <h3>Contribution Activity</h3>
+          <div class="contribution-stats">
+            <p><strong>Total Contributions:</strong> <span id="totalContributions">Loading...</span></p>
+          </div>
+          <div id="contributionGraph" class="chart-container"></div>
         </div>
 
         <div class="profile-info">
@@ -176,6 +189,7 @@ async function loadProfileData() {
       welcomeTitle.textContent = `Welcome, ${userData.firstName || 'User'}!`;
     }
 
+
     updateElementText(
       'fullName',
       `${userData.firstName || ''} ${userData.lastName || ''}`
@@ -184,6 +198,46 @@ async function loadProfileData() {
     updateElementText('email', userData.email || 'N/A');
     updateElementText('campus', userData.campus || 'N/A');
     updateElementText('level', userData.level_amount?.[0]?.amount || 'N/A');
+
+    // Update Contribution Activity
+    const contributionGraphContainer = document.getElementById('contributionGraph');
+    if (contributionGraphContainer) {
+      const xpData =
+        userData.xp?.map((x) => ({
+          createdAt: x.createdAt,
+          amount: x.amount || 0,
+        })) || [];
+
+      if (xpData.length > 0) {
+        // Calculate total contributions (count of XP entries)
+        const totalContributions = xpData.length;
+        updateElementText('totalContributions', totalContributions.toString());
+
+        // Sort data by date
+        xpData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+
+
+        contributionGraphContainer.innerHTML = '';
+        const contributionGraphInstance = new ContributionGraph(xpData, {
+          squareSize: 16,    // Increased from 12 to 16
+          squareGap: 2,      // Reduced from 3 to 2 for tighter grid
+          padding: 35,       // Increased from 25 to 35
+          color: "#3e3eff",
+        });
+        const svgElement = contributionGraphInstance.render();
+        
+        // Create scrollable container that stays centered
+        const scrollContainer = document.createElement('div');
+        scrollContainer.className = 'contribution-scroll-container';
+        scrollContainer.appendChild(svgElement);
+        
+        contributionGraphContainer.appendChild(scrollContainer);
+      } else {
+        updateElementText('totalContributions', '0');
+        contributionGraphContainer.innerHTML = '<p>No contribution data available</p>';
+      }
+    }
 
     // Update Spider-Chart for best skills
     const spiderChart = document.getElementById('spiderChart');
