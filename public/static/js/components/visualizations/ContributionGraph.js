@@ -155,7 +155,8 @@ export class ContributionGraph {
         // Dark Mode + Auto Color Shades
         // -------------------------------------------
         const lightEmpty = "#f0f0f0";
-        const darkEmpty = "#161b22";
+
+        const darkEmpty = "#94949480";
 
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const emptyColor = prefersDark ? darkEmpty : lightEmpty;
